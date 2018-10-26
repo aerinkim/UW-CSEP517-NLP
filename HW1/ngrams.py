@@ -7,7 +7,7 @@ class NGram():
     Args:
         sentence_list (list): The list of sentences (strings) to TRAIN the ngram models on. Only use the training data.
     """
-    def __init__(self, sentence_list, unk_thresh=1):
+    def __init__(self, sentence_list, unk_thresh=1, add_k=0.0000001):
         
         self.unigram_count = Counter()
         self.unigram_count_w_UNK = Counter()
@@ -22,6 +22,7 @@ class NGram():
         self.num_of_unique_unigram_in_training = len(self.unigram_count_w_UNK.keys())
         self.num_of_unique_bigram_in_training = len(self.bigram_count_w_UNK.keys())
         self.num_of_unique_trigram_in_training = len(self.trigram_count_w_UNK.keys())
+        self.add_k = add_k
 
     def tokensToNgramList(self, token_list, N):
         return [tuple(token_list[i:i + N]) for i in range(0, len(token_list) - N + 1)]
@@ -82,12 +83,12 @@ class NGram():
         elif len(token_tuple) == 2:
             if token_tuple not in self.p_mle:
                 # All unigrams are seen throughout the oov process. We don't need to worry about the denominator in bigram.
-                self.p_mle[token_tuple] = (self.count(token_tuple) + add_k) / (self.count((token_tuple[0],)) + add_k*self.num_of_unique_unigram_in_training) 
+                self.p_mle[token_tuple] = (self.count(token_tuple) + self.add_k) / (self.count((token_tuple[0],)) + self.add_k*self.num_of_unique_unigram_in_training) 
                 #print(token_tuple,self.p_mle[token_tuple]) 
             return self.p_mle[token_tuple]
         
         elif len(token_tuple) == 3:
             if token_tuple not in self.p_mle:
-                self.p_mle[token_tuple] = (self.count(token_tuple) + add_k) / (self.count(tuple(token_tuple[0:2])) + add_k*self.num_of_unique_unigram_in_training)
+                self.p_mle[token_tuple] = (self.count(token_tuple) + self.add_k) / (self.count(tuple(token_tuple[0:2])) + self.add_k*self.num_of_unique_unigram_in_training)
                 #print(token_tuple,self.p_mle[token_tuple])
             return self.p_mle[token_tuple]

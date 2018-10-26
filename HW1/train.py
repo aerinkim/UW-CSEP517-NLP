@@ -43,12 +43,13 @@ for files_to_test in ['data/brown.train.txt','data/brown.dev.txt','data/brown.te
 print("\n ####### 4-1-a. Report perplexity scores on training and dev sets for various values of K (no interpolation). #######") 
 
 unk_thres = 1
-ngram = NGram(train_tokens_list, unk_thres)
+
 for files_to_test in ['data/brown.train.txt','data/brown.dev.txt']:
-	for k in [1000000000, 1000, 1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.0000000001]:
-		model = NGramLanguageModel(ngram, k)
+	for k in [10, 1, 0.1, 0.001, 0.00001]:
+		ngram = NGram(train_tokens_list, unk_thres, k)
+		model = NGramLanguageModel(ngram)
 		unigram_score, bigram_score, trigram_score = model.perplexity(files_to_test)
-		print ('perplexity score for ', files_to_test, " using add-K as ", model.add_k)
+		print ('perplexity score for ', files_to_test, " using add-K as ", ngram.add_k)
 		print ("unigram_score, bigram_score, trigram_score: ", unigram_score, bigram_score, trigram_score)
 
 
