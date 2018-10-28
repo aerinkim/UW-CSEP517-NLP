@@ -73,7 +73,7 @@ class NGram():
             return 1.0 * self.trigram_count_w_UNK[token_tuple]
 
 
-    def pMLE(self, token_tuple, add_k):
+    def pMLE(self, token_tuple):
         if len(token_tuple) == 1:
             if token_tuple not in self.p_mle:
                 self.p_mle[token_tuple] = self.count(token_tuple) / self.total_num_of_unigrams_in_training 

@@ -3,10 +3,9 @@ import math
 
 
 class NGramLanguageModel():
-    def __init__(self, nGram, add_k=0.0000001):
+    def __init__(self, nGram):
         #nGrams are always from the training set.
         self.nGram = nGram
-        self.add_k = add_k
 
     def logPredictionSentence(self, token_list):
         # For example of unigram, 
@@ -19,16 +18,16 @@ class NGramLanguageModel():
         logTriProb = 0.0
 
         for unigram in unigrams:
-            logUniProb += math.log(self.nGram.pMLE(unigram, self.add_k), 2)
-            #print (unigram, self.nGram.pMLE(unigram, self.add_k))
+            logUniProb += math.log(self.nGram.pMLE(unigram), 2)
+            #print (unigram, self.nGram.pMLE(unigram))
 
         for bigram in bigrams:
-            logBiProb += math.log(self.nGram.pMLE(bigram, self.add_k), 2)
-            #print (bigram, self.nGram.pMLE(bigram, self.add_k))
+            logBiProb += math.log(self.nGram.pMLE(bigram), 2)
+            #print (bigram, self.nGram.pMLE(bigram))
 
         for trigram in trigrams:
-            logTriProb += math.log(self.nGram.pMLE(trigram, self.add_k), 2)
-            #print (trigram, self.nGram.pMLE(trigram, self.add_k))
+            logTriProb += math.log(self.nGram.pMLE(trigram), 2)
+            #print (trigram, self.nGram.pMLE(trigram))
 
         return logUniProb, logBiProb, logTriProb
 
@@ -59,20 +58,19 @@ class NGramLanguageModel():
 
 
 class LinearInterpolation():
-    def __init__(self, nGram, a1, a2, a3, add_k=0.0000001):
+    def __init__(self, nGram, a1, a2, a3):
         self.nGram = nGram
         self.a1 = a1
         self.a2 = a2
         self.a3 = a3
-        self.add_k = add_k
 
     def logPredictionSentence(self, token_list): 
         trigrams =  self.nGram.tokensToNgramList(token_list, 3)
         logProb = 0.0
         for trigram in trigrams:
-            uniProb = self.a1 * self.nGram.pMLE((trigram[0],), self.add_k)
-            biProb = self.a2 * self.nGram.pMLE(tuple(trigram[0:2]), self.add_k)
-            triProb = self.a3 * self.nGram.pMLE(trigram, self.add_k)
+            uniProb = self.a1 * self.nGram.pMLE((trigram[0],))
+            biProb = self.a2 * self.nGram.pMLE(tuple(trigram[0:2]))
+            triProb = self.a3 * self.nGram.pMLE(trigram)
             logProb += math.log(uniProb + biProb + triProb, 2)
         return logProb
 

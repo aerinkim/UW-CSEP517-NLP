@@ -69,11 +69,11 @@ for files_to_test in ['data/brown.train.txt','data/brown.dev.txt']:
 print("\n ####### 4-1-c. Putting it all together, report perplexity on the test set, using different smoothing techniques and the corresponding hyper-parameters that you chose from the dev set.#######") 
 
 best_lambda_set = (0.3333,0.3333,0.3333)
-best_k =  0.00001
+best_k =  0.001
 
 unk_thres = 1
-ngram = NGram(train_tokens_list, unk_thres)
-model = LinearInterpolation(ngram, best_lambda_set[0], best_lambda_set[1], best_lambda_set[2], best_k)
+ngram = NGram(train_tokens_list, unk_thres, best_k)
+model = LinearInterpolation(ngram, best_lambda_set[0], best_lambda_set[1], best_lambda_set[2])
 perplexity = model.perplexity(test_file)
 print ('perplexity score for ', test_file ," with the lambda_set of ", best_lambda_set)
 print ("perplexity score: ", perplexity)
