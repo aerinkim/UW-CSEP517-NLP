@@ -12,7 +12,7 @@ test_file = 'data/brown.test.txt'
 # 3. Language Models 
 ####################
 
-# Chosing the right oov threshold using the dev_set
+# Choosing the right oov threshold using the dev_set
 
 print("\n ####### Reproducing problem 3. table 1 #######") 
 for unk_thres in [1,5,10,20,30]:
