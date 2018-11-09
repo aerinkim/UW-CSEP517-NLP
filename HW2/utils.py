@@ -46,6 +46,15 @@ def read_dataset(filename):
     lines.close()
     return dataset
 
+
+def read_dataset_for_em(train_corpus):
+    output=[]
+    for tweet in train_corpus:
+        for token_tag_pair in tweet:
+            output.append(token_tag_pair[0])
+    return output
+
+
 def preprocessing(dataset, oov_thres):
     for line in dataset:    # add STOP/START 
         line.append([STOP_SYMBOL,STOP_SYMBOL])
@@ -99,7 +108,8 @@ def learning(dataset):
     emiss_unigram_count = defaultdict(lambda: 0)
     beginning_training = time.time();
     
-    # count transitions and emissions. idx2, idx1, idx0 -> is the sequence of the words. 
+    # count transitions and emissions. idx2, idx1, idx0 -> (penult, prev, current). 
+    # [tag0, tag1, tag2] -> current, prev, penult.
     for tweet in dataset:
         idx1 = [START_SYMBOL,START_SYMBOL]
         idx2 = [START_SYMBOL,START_SYMBOL]
@@ -171,3 +181,34 @@ def print_confusion_matrix(conf_matrix,vocab_tag):
             Matrix[x][y] = conf_matrix.get((tag1,tag2),0)
     dict1_keys=sorted([key for (key,value) in dict1.items()])
     print (pd.DataFrame(Matrix,dict1_keys,dict1_keys))
+
+
+
+import random
+
+# Functions to initialize distributions
+
+def distribute_default(distribution, from_states, to_states):
+    magnitude = len(from_states) * len(to_states)
+    for from_state in from_states:
+        for to_state in to_states:
+            distribution[(from_state, to_state)] = 1.0 / float(magnitude)
+
+
+def distribute_random(distribution, from_states, to_states):
+    for from_state in from_states:
+        magnitude = 0.0
+        for to_state in to_states:
+            distribution[(from_state, to_state)] = random.random()
+            magnitude += distribution[(from_state, to_state)]
+        for to_state in to_states:
+            distribution[(from_state, to_state)] /= magnitude
+        
+
+def distribute_pi(pi, from_states):
+    magnitude = 0.0
+    for from_state in from_states:
+        pi[from_state] = random.random()
+        magnitude += pi[from_state]
+    for from_state in from_states:
+        pi[from_state] /= magnitude

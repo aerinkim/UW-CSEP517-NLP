@@ -25,12 +25,14 @@ def viterbi(vocab, vocab_tag, words, tags, t_bigram_count, t_unigram_count, e_bi
 		V.append({})
 		for t in vocab_tag:
 			V[i][t] =  {"prob": np.log2(0), "prev": None}
+		
 		for t in vocab_tag:
 			max_trans_prob = np.log2(0);
 			for prev_tag in vocab_tag:
 				trans_prob = np.log2(float(t_bigram_count.get((t, prev_tag),0)+ADD_K))-np.log2(float(t_unigram_count[prev_tag]+vocab_size*ADD_K))	
+
 				if V[i-1][prev_tag]["prob"]+trans_prob > max_trans_prob:
-					max_trans_prob = V[i-1][prev_tag]["prob"]+trans_prob 
+					max_trans_prob = V[i-1][prev_tag]["prob"]+trans_prob
 					max_prob = max_trans_prob+np.log2(e_bigram_count.get((words[i],t),0)+ADD_K)-np.log2(float(e_unigram_count[t]+vocab_size*ADD_K))
 					V[i][t] = {"prob": max_prob, "prev": prev_tag}
 	opt = []
@@ -85,38 +87,37 @@ def bigram_inference(vocab, vocab_tag, dataset, t_bigram_count, t_unigram_count,
 	print ("#####################################")
 	print ("######### confusion matrix###########")
 	print ("#####################################")
-	#print_confusion_matrix(conf_matrix,vocab_tag)
+	print_confusion_matrix(conf_matrix,vocab_tag)
 
 
 def main():
-
+	"""
 	# Test it on Train set.
 	train_corpus = read_dataset(TRAIN_SET_PATH)
 	for oov_thres in [1,5,10]:
 		(train_data, vocab, tags) = preprocessing(train_corpus, oov_thres) #final_corpus,words_unk_counts,tags_unk_counts
 		test_data = preproc_test(train_corpus,vocab)
-		K_set = [1, 0.01, 0.0001, 0.000001]
 		t_trigram_count, t_bigram_count, t_unigram_count, e_trigram_count, e_bigram_count, e_unigram_count = learning(train_data)
-		for ADD_K in K_set:
+		for ADD_K in [1, 0.01, 0.0001]:
 			print('oov thres: ', oov_thres)
 			bigram_inference(vocab, tags, test_data, t_bigram_count, t_unigram_count, e_bigram_count, e_unigram_count, ADD_K)
-
-"""
+	
+	
 	# Test it on Dev set.
 	train_corpus = read_dataset(TRAIN_SET_PATH)
 	test_corpus = read_dataset(DEV_SET_PATH)
 	for oov_thres in [1,5,10]:
 		(train_data, vocab, tags) = preprocessing(train_corpus, oov_thres) #final_corpus,words_unk_counts,tags_unk_counts
 		test_data = preproc_test(test_corpus,vocab)
-		K_set = [1, 0.01, 0.0001, 0.000001]
 		t_trigram_count, t_bigram_count, t_unigram_count, e_trigram_count, e_bigram_count, e_unigram_count = learning(train_data)
-		for ADD_K in K_set:
+		for ADD_K in  [1, 0.01, 0.0001]:
 			print('oov thres: ', oov_thres)
 			bigram_inference(vocab, tags, test_data, t_bigram_count, t_unigram_count, e_bigram_count, e_unigram_count, ADD_K)
+	"""
 
-"""
-
+	"""
 	# Train it on Train+Bonus set, Test it on Dev set.
+	print('training on bonus set')
 	train_corpus = read_dataset(TRAIN_SET_PATH)
 	bonus_corpus = read_dataset(BONUS_SET_PATH)
 	train_corpus = train_corpus+bonus_corpus
@@ -124,11 +125,27 @@ def main():
 	for oov_thres in [1,5,10]:
 		(train_data, vocab, tags) = preprocessing(train_corpus, oov_thres) #final_corpus,words_unk_counts,tags_unk_counts
 		test_data = preproc_test(test_corpus,vocab)
-		K_set = [1, 0.01, 0.0001, 0.000001]
 		t_trigram_count, t_bigram_count, t_unigram_count, e_trigram_count, e_bigram_count, e_unigram_count = learning(train_data)
-		for ADD_K in K_set:
+		for ADD_K in  [1, 0.01, 0.0001]:
 			print('oov thres: ', oov_thres)
-		
+			bigram_inference(vocab, tags, test_data, t_bigram_count, t_unigram_count, e_bigram_count, e_unigram_count, ADD_K)
+	"""
+
+	# Final Testing Result
+	# Chosen parameter: oov 1. ADD_K 0.0001
+	print('training on bonus set')
+	train_corpus = read_dataset(TRAIN_SET_PATH)
+	bonus_corpus = read_dataset(BONUS_SET_PATH)
+	train_corpus = train_corpus+bonus_corpus
+	test_corpus = read_dataset(TEST_SET_PATH)
+	oov_thres = 1
+	ADD_K = 0.0001
+	(train_data, vocab, tags) = preprocessing(train_corpus, oov_thres) #final_corpus,words_unk_counts,tags_unk_counts
+	test_data = preproc_test(test_corpus,vocab)
+	t_trigram_count, t_bigram_count, t_unigram_count, e_trigram_count, e_bigram_count, e_unigram_count = learning(train_data)
+	bigram_inference(vocab, tags, test_data, t_bigram_count, t_unigram_count, e_bigram_count, e_unigram_count, ADD_K)
+
+
 
 if __name__ == "__main__":
 	main() 
