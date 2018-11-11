@@ -6,7 +6,15 @@ class NGram():
     """ 
     Args:
         sentence_list (list): The list of sentences (strings) to TRAIN the ngram models on. Only use the training data.
+    
+    For example,
+    ['the twins tied the score in the sixth inning when reno bertoia beat out a high
+     chopper to third base and scored on lenny greens double to left . <STOP>',
+     'the white sox had taken a  lead in the top of the sixth on a pair of pop fly h
+    its  a triple by roy sievers and single by camilo carreon  a walk and a sacrific
+    e fly . <STOP>', ...]
     """
+    
     def __init__(self, sentence_list, unk_thresh=1, add_k=0.0000001):
         
         self.unigram_count = Counter()
